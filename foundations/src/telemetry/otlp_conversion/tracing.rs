@@ -1,3 +1,5 @@
+#[cfg(feature = "user-tracing")]
+use super::common::convert_service_name_to_resource;
 use super::common::{convert_service_info_to_resource, convert_time};
 use crate::ServiceInfo;
 use cf_rustracing::log::Log;
@@ -95,6 +97,21 @@ pub(crate) fn convert_span(
     span: FinishedSpan,
     service_info: &ServiceInfo,
 ) -> otlp::trace::v1::ResourceSpans {
+    convert_span_with_resource(span, convert_service_info_to_resource(service_info))
+}
+
+#[cfg(feature = "user-tracing")]
+pub(crate) fn convert_user_span(
+    span: FinishedSpan,
+    service_name: &str,
+) -> otlp::trace::v1::ResourceSpans {
+    convert_span_with_resource(span, convert_service_name_to_resource(service_name))
+}
+
+fn convert_span_with_resource(
+    span: FinishedSpan,
+    resource: otlp::resource::v1::Resource,
+) -> otlp::trace::v1::ResourceSpans {
     let span_state = span.context().state();
     let (status_code, attributes) = convert_tags(&span);
 
@@ -106,7 +123,7 @@ pub(crate) fn convert_span(
     });
 
     otlp::trace::v1::ResourceSpans {
-        resource: Some(convert_service_info_to_resource(service_info)),
+        resource: Some(resource),
         schema_url: Default::default(),
         scope_spans: vec![otlp::trace::v1::ScopeSpans {
             schema_url: Default::default(),
