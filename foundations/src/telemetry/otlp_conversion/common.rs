@@ -1,3 +1,4 @@
+#[cfg(feature = "telemetry-otlp-grpc")]
 use crate::ServiceInfo;
 use opentelemetry_proto::tonic as otlp;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
@@ -22,6 +23,7 @@ pub(super) fn convert_service_name_to_resource(service_name: &str) -> otlp::reso
     }
 }
 
+#[cfg(feature = "telemetry-otlp-grpc")]
 pub(super) fn convert_service_info_to_resource(
     service_info: &ServiceInfo,
 ) -> otlp::resource::v1::Resource {

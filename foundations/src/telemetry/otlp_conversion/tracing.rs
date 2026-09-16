@@ -1,6 +1,9 @@
+#[cfg(feature = "telemetry-otlp-grpc")]
+use super::common::convert_service_info_to_resource;
 #[cfg(feature = "user-tracing")]
 use super::common::convert_service_name_to_resource;
-use super::common::{convert_service_info_to_resource, convert_time};
+use super::common::convert_time;
+#[cfg(feature = "telemetry-otlp-grpc")]
 use crate::ServiceInfo;
 use cf_rustracing::log::Log;
 use cf_rustracing::span::SpanReference;
@@ -93,6 +96,7 @@ fn convert_tags(
     (status_code, attributes)
 }
 
+#[cfg(feature = "telemetry-otlp-grpc")]
 pub(crate) fn convert_span(
     span: FinishedSpan,
     service_info: &ServiceInfo,
